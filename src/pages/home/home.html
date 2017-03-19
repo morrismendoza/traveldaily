@@ -1,0 +1,21 @@
+<ion-header>
+
+  <ion-navbar>
+    <button ion-button menuToggle>
+    <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title >Travel Daily</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-refresher (ionRefresh)="refreshFeeds($event)">
+    <ion-refresher-content
+      refreshingText="Refreshing Feeds..."
+    ></ion-refresher-content>
+  </ion-refresher>
+  <ion-item text-wrap *ngFor="let feed of feeds">
+    <h1>{{feed.title}}</h1>
+    <div [innerHtml]="feed.description"></div>
+    <div><button *ngIf="feed.link" ion-button (click)="download(feed.title, feed.link)">Download</button></div>
+  </ion-item>
+</ion-content>

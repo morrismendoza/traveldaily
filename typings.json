@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "xml2js": "registry:dt/xml2js#0.0.0+20161130184909",
+    "xmltojson": "registry:dt/xmltojson#0.0.0+20160428043022"
+  },
+  "globalDependencies": {
+    "cordova": "registry:dt/cordova#0.0.0+20160819210047"
+  }
+}

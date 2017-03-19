@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+    <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Latest news</ion-title>
+  </ion-navbar>
+  <!--<ion-toolbar color="secondary">
+    <ion-title>News Feed</ion-title>
+  </ion-toolbar>-->
+
+</ion-header>
+
+
+<ion-content>
+  <ion-list>
+    <ion-item text-wrap class="item-text-wrap" *ngFor="let feed of feeds.items" (click)="itemTapped(feed)">
+        <h1>{{feed.title}}</h1>
+        <div [innerHTML]="feed.description"></div>
+    </ion-item>
+  </ion-list>
+</ion-content>
