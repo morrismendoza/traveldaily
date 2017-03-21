@@ -5,18 +5,18 @@
     </button>
     <ion-title>Latest news</ion-title>
   </ion-navbar>
-  <!--<ion-toolbar color="secondary">
-    <ion-title>News Feed</ion-title>
-  </ion-toolbar>-->
 
 </ion-header>
 
 
 <ion-content>
+  <ion-refresher (ionRefresh)="refreshLatest($event)">
+    <ion-refresher-content refreshingText="Refreshing Latest News..."></ion-refresher-content>
+  </ion-refresher>
   <ion-list>
     <ion-item text-wrap class="item-text-wrap" *ngFor="let feed of feeds.items" (click)="itemTapped(feed)">
-        <h1>{{feed.title}}</h1>
-        <div [innerHTML]="feed.description"></div>
+      <h2 class="strong header-color">{{feed.title}}</h2>
+      <div [innerHTML]="feed.description"></div>
     </ion-item>
   </ion-list>
 </ion-content>

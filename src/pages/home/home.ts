@@ -90,11 +90,12 @@ export class HomePage {
 
   getDocumentsDb() {
     let loader = this.loading.create({
-      content: 'Retrieving pdf...'
+      content: 'Loading News Feeds...',
+      duration: 10000
     });
 
     loader.present().then(() => {
-      this.storage.executeSql("SELECT * FROM NewsFeeds", []).then((resp) => {
+      this.storage.executeSql("SELECT * FROM NewsFeeds LIMIT 50", []).then((resp) => {
         if (resp.rows.length > 0) {
           for (var i = 0; i < resp.rows.length; i++) {
             let item = resp.rows.item(i);
@@ -106,14 +107,15 @@ export class HomePage {
               link: resp.rows.item(i).link,
               fileLocation: resp.rows.item(i).fileLocation
             });
+            loader.dismiss();
           }
         } else {
           this.rssService.getaArchiveFeed(this.baseFeeds)
             .subscribe(data => {
               this.feeds = this.saveFeeds(data);
+              loader.dismiss();
             });
         }
-        loader.dismiss();
       }, (error) => {
         console.log('Error retrieving feeds', error);
         loader.dismiss();
@@ -126,28 +128,10 @@ export class HomePage {
   }
 
   saveFeedData(feedData) {
-    let query = "INSERT OR REPLACE INTO FeedsData (title, filePath) VALUES (?, ?)";
-    return this.storage.executeSql(query, [feedData.title, feedData.path]);
-  }
-
-  getDocumentDataAsync(title) {
-    let __this = this;
-    return new Promise(function (resolve, reject) {
-      __this.storage.executeSql("SELECT * FROM FeedsData where title=?", [title]).then((data) => {
-        if (data.rows.length > 0) {
-          let item = data.rows.item(0);
-          resolve({
-            title: item.title,
-            filePath: item.filePath
-          });
-        } else {
-          resolve(null);
-        }
-      }, (error) => {
-        console.log('Unable to find feeds data');
-        reject(null);
-      })
-    });
+    // let query = "INSERT OR REPLACE INTO FeedsData (title, filePath) VALUES (?, ?)";
+    // return this.storage.executeSql(query, [feedData.title, feedData.path]);
+    let query = 'UPDATE NewsFeeds SET fileLocation = ? WHERE title = ?'
+    return this.storage.executeSql(query, [feedData.path, feedData.title]);
   }
 
   saveFeeds(feeds) {
@@ -189,12 +173,16 @@ export class HomePage {
 
   openPdfInAppBrowser(url) {
     this.platform.ready().then(() => {
-      window.open(url, '_blank','location=no,enableviewportscale=yes');
+      window.open(url, '_blank', 'location=no,enableviewportscale=yes');
     })
   }
 
-  download(feedTitle, fileUrl) {
-
+  download(feed) {
+    if (feed.fileLocation) {
+      this.openPdfInAppBrowser(feed.fileLocation);
+      return;
+    }
+    
     let loader = this.loading.create({
       content: 'Downloading pdf...'
     });
@@ -202,52 +190,35 @@ export class HomePage {
     let fileFound: string = '';
 
     loader.present().then(() => {
-      this.getDocumentDataAsync(feedTitle).then((doc: FeedData) => {
-        if (doc) {
-          console.log('File found');
-          // this.navCtrl.push(PdfviewPage, {
-          //   pdfpath: doc.filePath
-          // });
+      this.getDocument(feed.title).then((document) => {
+        if (document.rows.length > 0) {
+          let currDoc = document.rows.item(0);
+          const fileTransfer = new Transfer();
+          let filename = currDoc.link.substring(currDoc.link.lastIndexOf('/') + 1);
+          if (filename) {
+            let pathToSave = cordova.file.dataDirectory + filename;
 
-          //this.openInFileOpener(doc.filePath);
-
-          this.openPdfInAppBrowser(doc.filePath);
-          loader.dismiss();
-        } else {
-          this.getDocument(feedTitle).then((document) => {
-            if (document.rows.length > 0) {
-              let currDoc = document.rows.item(0);
-              const fileTransfer = new Transfer();
-              let filename = currDoc.link.substring(currDoc.link.lastIndexOf('/') + 1);
-              if (filename) {
-                let pathToSave = cordova.file.dataDirectory + filename;
-
-                fileTransfer.download(fileUrl, pathToSave).then((entry) => {
-                  this.saveFeedData({ title: feedTitle, path: entry.nativeURL }).then((result) => {
-                    console.log('Saved', result);
-                    loader.dismiss();
-                  }, (error) => {
-                    console.log('Error in saveing feeds data', error);
-                    loader.dismiss();
-                  });
-                }, (error) => {
-                  console.log('File download error', error);
-                  loader.dismiss();
-                });
-              }
-              else {
-                console.log('No file available');
-              }
-            }
-            else {
-              console.log('Unable to find document data', document);
+            fileTransfer.download(feed.link, pathToSave).then((entry) => {
+              this.saveFeedData({ title: feed.title, path: entry.nativeURL }).then((result) => {
+                feed.fileLocation = entry.nativeURL;
+                loader.dismiss();
+              }, (error) => {
+                console.log('Error in saveing feeds data', error);
+                loader.dismiss();
+              });
+            }, (error) => {
+              console.log('File download error', error);
               loader.dismiss();
-            }
-          });
+            });
+          }
+          else {
+            console.log('No file available');
+          }
         }
-      }, (error) => {
-        console.log('Unable to find data', error);
-        loader.dismiss();
+        else {
+          console.log('Unable to find document data', document);
+          loader.dismiss();
+        }
       });
     });
   }

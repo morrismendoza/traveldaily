@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
 
 import { RssService } from '../../shared/shared';
 
@@ -15,18 +15,36 @@ export class LatestPage {
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
-    private rssService: RssService) { }
+    private rssService: RssService,
+    private loading: LoadingController) { }
 
   ionViewDidLoad() {
-    this.rssService.getFeedContent(this.baseFeeds)
-      .subscribe(data => this.loadFeeds(data));
+    let loader = this.loading.create({
+      content: 'Loading Latest News...',
+      duration: 10000
+    });
 
-    console.log(this.feeds);
+    loader.present().then(() => {
+      this.rssService.getFeedContent(this.baseFeeds)
+        .subscribe(data => {
+          this.bindFeeds(data);
+          loader.dismiss();
+        });
+    }, (error) => {
+      console.log('Error retrieving latest news', error);
+      loader.dismiss();
+    });
   }
 
-  loadFeeds(feedContent) {
-    console.log("Feeds", feedContent);
+  bindFeeds(feedContent) {
     this.feeds = feedContent;
   }
 
+  refreshLatest(refresher) {
+    this.rssService.getFeedContent(this.baseFeeds)
+      .subscribe(data => {
+        this.bindFeeds(data);
+        refresher.complete();
+      });
+  }
 }

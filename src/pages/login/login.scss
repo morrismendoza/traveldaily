@@ -1,6 +1,82 @@
 page-login {
+
+  .logo-image{
+    margin-top: 80px;
+    margin-bottom: 20px;
+  }
+
+  .center {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  .td-login{
+    background: url("../img/td-background.png") no-repeat center;
+      -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  }
+
+  /*
+  
+  Login Template CSS
+
+  */
+
+  .login-content {
+    background: #56CA96;
+    background: url("../img/td-background.png") no-repeat center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+ 
+    .logo-row {
+      padding-top: 50px;
+      padding-bottom: 20px;
+    }
+ 
+    .login-box {
+      background: #ffffff;
+      padding: 10px 10px 0px 10px;
+      margin-top: 30px;
+    }
+ 
+    ion-row {
+       align-items: center;
+       text-align: center;
+     }
+ 
+     ion-item {
+         border-radius: 10px !important;
+         padding-left: 10px !important;
+         font-size: 0.9em;
+         margin-bottom: 10px;
+         border: 1px solid #ffffff;
+         border-bottom: 0px !important;
+         box-shadow: none !important;
+     }
+
+     .signup-col {
+       margin: 0px 16px 0px 16px;
+       padding-bottom: 20px;
+     }
+ 
+     .item-inner {
+       border-bottom-color: #ffffff !important;
+       box-shadow: none !important;
+     }
+ 
+     .submit-btn {
+       border-radius: 30px !important;
+       border: 1px solid #ffffff;
+     }
+  }
+
 #login {
-  background: #1c2627 url("../img/login_bg.jpg") no-repeat center center;
+  background: url("../img/td-background.jpg") no-repeat center center;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

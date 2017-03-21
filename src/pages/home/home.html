@@ -1,21 +1,54 @@
 <ion-header>
-
   <ion-navbar>
     <button ion-button menuToggle>
     <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title >Travel Daily</ion-title>
+    <ion-title class="primary">Travel Daily</ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content padding>
+<ion-content>
   <ion-refresher (ionRefresh)="refreshFeeds($event)">
-    <ion-refresher-content
-      refreshingText="Refreshing Feeds..."
-    ></ion-refresher-content>
+    <ion-refresher-content refreshingText="Refreshing Feeds..."></ion-refresher-content>
   </ion-refresher>
-  <ion-item text-wrap *ngFor="let feed of feeds">
+
+  <ion-card class="ipad-card" *ngFor="let feed of feeds">
+    <ion-item>
+      <ion-avatar *ngIf="feed.link" item-left>
+        <img src="img/pdf.png">
+      </ion-avatar>
+      <h2 class="header-color strong">{{feed.title}}</h2>
+      <p>{{feed.pubDate | date: 'dd/MM/yyyy h:mm a'}}</p>
+    </ion-item>
+
+    <ion-card-content>
+      <div [innerHtml]="feed.description"></div>
+    </ion-card-content>
+
+    <ion-row class="row-center" *ngIf="feed.link">
+      <ion-col>
+        <button ion-button icon-left clear small (click)="download(feed)">
+        <ion-icon name="download"></ion-icon>
+        <div>      
+          <span *ngIf="feed.fileLocation">View</span>
+          <span *ngIf="!feed.fileLocation">Download</span>
+        </div>
+      </button>
+      </ion-col>
+      <!--<ion-col>
+        <button ion-button icon-left clear small>
+        <ion-icon name="text"></ion-icon>
+        <div>4 Comments</div>
+      </button>
+      </ion-col>-->
+    </ion-row>
+  </ion-card>
+
+  <!--<ion-item text-wrap *ngFor="let feed of feeds">
     <h1>{{feed.title}}</h1>
     <div [innerHtml]="feed.description"></div>
-    <div><button *ngIf="feed.link" ion-button (click)="download(feed.title, feed.link)">Download</button></div>
-  </ion-item>
+    <div><button *ngIf="feed.link" ion-button (click)="download(feed)">
+      <span *ngIf="feed.fileLocation">VIEW</span>
+      <span *ngIf="!feed.fileLocation">DOWNLOAD</span>
+      </button></div>
+  </ion-item>-->
 </ion-content>
